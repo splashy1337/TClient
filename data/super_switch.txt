@@ -1,0 +1,3 @@
+rcon super
+echo Super: ON
+bind w "rcon unsuper; echo Super: OFF; bind w exec super_switch.txt"

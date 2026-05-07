@@ -1,0 +1,365 @@
+[Random Silver]
+
+# 1x1 Blocks (Original file had some, adding based on user input)
+Index 16
+Index 1
+Random 40
+Index 1 XFLIP
+Random 40
+Index 1 YFLIP
+Random 40
+Index 1 YFLIP XFLIP
+Random 40
+Index 2
+Random 40
+Index 2 XFLIP
+Random 40
+Index 2 YFLIP
+Random 40
+Index 2 YFLIP XFLIP
+Random 40
+Index 3 # Assuming this remains a 1x1 based on original file context
+Random 40
+Index 4 # Assuming this remains a 1x1 based on original file context
+Random 40
+Index 5 # Assuming this remains a 1x1 based on original file context
+Random 40
+Index 6 # Assuming this remains a 1x1 based on original file context
+Random 40
+Index 7 # Assuming this remains a 1x1 based on original file context
+Random 40
+Index 8 # Assuming this remains a 1x1 based on original file context
+Random 40
+Index 9 # Assuming this remains a 1x1 based on original file context
+Random 40
+
+Index 16 XFLIP
+Random 40
+Index 16 YFLIP
+Random 40
+Index 16 YFLIP XFLIP
+Random 40
+
+# 2x1 Blocks (New)
+Index 17
+Random 40
+Index 17 XFLIP
+Random 40
+Index 17 YFLIP
+Random 40
+Index 17 YFLIP XFLIP
+Random 40
+Index 112
+Random 40
+Index 112 XFLIP
+Random 40
+Index 112 YFLIP
+Random 40
+Index 112 YFLIP XFLIP
+Random 40
+Index 160
+Random 40
+Index 160 XFLIP
+Random 40
+Index 160 YFLIP
+Random 40
+Index 160 YFLIP XFLIP
+Random 40
+
+# 3x1 Blocks (New)
+Index 19
+Random 40
+Index 19 XFLIP
+Random 40
+Index 19 YFLIP
+Random 40
+Index 19 YFLIP XFLIP
+Random 40
+Index 114
+Random 40
+Index 114 XFLIP
+Random 40
+Index 114 YFLIP
+Random 40
+Index 114 YFLIP XFLIP
+Random 40
+Index 162
+Random 40
+Index 162 XFLIP
+Random 40
+Index 162 YFLIP
+Random 40
+Index 162 YFLIP XFLIP
+Random 40
+
+
+# 4x1 Blocks (New)
+Index 22
+Random 40
+Index 22 XFLIP
+Random 40
+Index 22 YFLIP
+Random 40
+Index 22 YFLIP XFLIP
+Random 40
+Index 117
+Random 40
+Index 117 XFLIP
+Random 40
+Index 117 YFLIP
+Random 40
+Index 117 YFLIP XFLIP
+Random 40
+Index 165
+Random 40
+Index 165 XFLIP
+Random 40
+Index 165 YFLIP
+Random 40
+Index 165 YFLIP XFLIP
+Random 40
+
+# 2x2 Blocks (New)
+Index 33
+Random 40
+Index 33 XFLIP
+Random 40
+Index 33 YFLIP
+Random 40
+Index 33 YFLIP XFLIP
+Random 40
+Index 128
+Random 40
+Index 128 XFLIP
+Random 40
+Index 128 YFLIP
+Random 40
+Index 128 YFLIP XFLIP
+Random 40
+
+# Original Random placements (Adjust if needed based on new tileset visuals)
+[source: 2] #random 2x2 (Using new 2x2 indices)
+Index 33
+Pos 0 0 FULL
+Pos 1 0 FULL
+Pos 0 1 FULL
+Pos 1 1 FULL
+Pos -1 0 NOTINDEX -1
+Pos 0 -1 NOTINDEX -1
+Pos 0 2 NOTINDEX -1
+Pos 2 0 NOTINDEX -1
+Random 50
+
+Index 128
+Pos 0 0 FULL
+Pos 1 0 FULL
+Pos 0 1 FULL
+Pos 1 1 FULL
+Pos -1 0 NOTINDEX -1
+Pos 0 -1 NOTINDEX -1
+Pos 0 2 NOTINDEX -1
+Pos 2 0 NOTINDEX -1
+Random 50
+
+# Larger blocks (Need indices for 3x3, 4x4 if they exist in the new set)
+# Placeholder for 3x3 (Index 80 from original, replace if needed)
+[source: 2] Index 80
+[source: 3] Pos 0 0 FULL
+Pos 1 0 FULL
+Pos 2 0 FULL
+Pos 0 1 FULL
+Pos 1 1 FULL
+Pos 2 1 FULL
+Pos 0 2 FULL
+Pos 1 2 FULL
+Pos 2 2 FULL
+Pos -1 0 NOTINDEX -1
+Pos 0 -1 NOTINDEX -1
+Pos 0 3 NOTINDEX -1
+Pos 3 0 NOTINDEX -1
+Random 75
+
+# Placeholder for 3x2 (Index 67, 99 from original, replace/remove if needed)
+[source: 3] Index 67
+Pos 0 0 FULL
+Pos 1 0 FULL
+Pos 2 0 FULL
+Pos 0 1 FULL
+Pos 1 1 FULL
+Pos 2 1 FULL
+Pos -1 0 NOTINDEX -1
+Pos 0 -1 NOTINDEX -1
+Pos 0 2 NOTINDEX -1
+Pos 3 0 NOTINDEX -1
+Random 100
+
+[source: 3] Index 99
+Pos 0 0 FULL
+Pos 1 0 FULL
+Pos 2 0 FULL
+Pos 0 1 FULL
+Pos 1 1 FULL
+Pos 2 1 FULL
+Pos -1 0 NOTINDEX -1
+Pos 0 -1 NOTINDEX -1
+Pos 0 2 NOTINDEX -1
+Pos 3 0 NOTINDEX -1
+Random 100 [cite: 4]
+
+NewRun
+
+# Remove overlaps - Updated for new multi-tile indices
+# This prevents 1x1 tiles (1-9, 16) from overlapping with larger tiles
+# Define the set of multi-tile indices
+# Multi = 17, 112, 160 (2x1), 19, 114, 162 (3x1), 22, 117, 165 (4x1), 33, 128 (2x2)
+# Add indices for 3x3, 4x4 if available
+# For simplicity, using 'MultiIndices' placeholder. Replace this in practice if the tool allows aliases or list all explicitly.
+# Assuming the tool requires explicit listing: MultiIndices = 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 (add 3x3/4x4 indices here)
+
+# --- Start Overlap Rules ---
+# Use Index 1-9 and 16 for the primary index check (tiles to be potentially removed)
+# Check against the new multi-tile indices at relevant relative positions
+
+# Example rule structure (repeat for all necessary Pos combinations and Index 1-9, 16):
+# Index [1-9, 16]
+# Pos 0 0 INDEX [MultiIndices] # Check if this spot should be part of a larger block originating elsewhere
+# Pos [relative coords] INDEX [MultiIndices] # Check if a larger block originates nearby covering this spot
+
+# --- Adapting original overlap logic structure ---
+# The original logic checked Index 16 against potential overlaps within a 3x3 area
+# Applying this to the new multi-tile set:
+# Replace '3 OR 5 OR 80 OR 67 OR 99' with the new list:
+# '17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128' (add 3x3, 4x4 if known)
+
+Index 1 # Target 1x1 tile
+Pos 0 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128
+Pos -1 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Check left
+
+Index 1 # Target 1x1 tile
+Pos 0 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128
+Pos 0 -1 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Check up
+
+Index 1 # Target 1x1 tile
+Pos 0 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128
+Pos -1 -1 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Check top-left
+
+# ... (Repeat similar rules for Index 1-9, 16 and various Pos combinations to cover potential overlaps from all directions based on the size of the larger blocks. The original file checked a 3x3 area[cite: 4, 5, 6, 7, 8, 9, 10]. You'll need to expand this checking area based on your largest block size (e.g., 4x1 or potential 4x4)).
+
+# --- Example using original file's structure with new indices ---
+# Repeat this block for Index 1-9 as well
+
+[source: 4] Index 16
+Pos 0 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+Pos -2 -2 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+
+[source: 4] Index 16
+Pos 0 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+Pos -1 -2 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+
+[source: 4] Index 16
+Pos 0 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+Pos 0 -2 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+
+[source: 5] Index 16
+Pos 0 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+Pos 1 -2 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+
+[source: 5] Index 16
+Pos 0 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+Pos 2 -2 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+
+[source: 5] Index 16
+Pos 0 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+Pos -2 -1 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+
+[source: 5] Index 16
+Pos 0 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+Pos -1 -1 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+
+[source: 6] Index 16
+Pos 0 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+Pos 0 -1 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+
+[source: 6] Index 16
+Pos 0 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+Pos 1 -1 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+
+[source: 6] Index 16
+Pos 0 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+Pos 2 -1 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+
+[source: 6] Index 16
+Pos 0 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+Pos -2 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+
+[source: 7] Index 16
+Pos 0 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+Pos -1 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+
+[source: 7] Index 16
+Pos 0 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+Pos 1 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+
+[source: 7] Index 16
+Pos 0 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+Pos 2 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+
+[source: 7] Index 16
+Pos 0 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+Pos -2 1 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+
+[source: 8] Index 16
+Pos 0 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+Pos -1 1 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+
+[source: 8] Index 16
+Pos 0 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+Pos 0 1 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+
+[source: 8] Index 16
+Pos 0 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+Pos 1 1 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+
+[source: 8] Index 16
+Pos 0 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+Pos 2 1 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+
+[source: 8] Index 16
+Pos 0 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+Pos -2 2 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+
+[source: 9] Index 16
+Pos 0 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+Pos -1 2 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+
+[source: 9] Index 16
+Pos 0 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+Pos 0 2 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+
+[source: 9] Index 16
+Pos 0 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+Pos 1 2 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+
+[source: 9] Index 16
+Pos 0 0 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4
+Pos 2 2 INDEX 17 OR 112 OR 160 OR 19 OR 114 OR 162 OR 22 OR 117 OR 165 OR 33 OR 128 # Add 3x3/4x4 [cite: 10]
+
+NewRun
+
+# Fill tiles section (Copied from original, may need adjustment based on new indices and how they fit)
+[source: 10] Index 4
+Pos -1 0 INDEX 3 # Adjust '3' if it's no longer the correct adjacent tile index
+Index 19 # This is now a 3x1 block
+# The original 'Fill tiles' for Index 19 likely needs removal or complete rework based on its new size
+# Pos 0 -1 INDEX 3 # Original rule - likely incorrect now
+Index 20 # Check what this index represents in the new tileset
+# Pos -1 -1 INDEX 3 # Original rule - likely incorrect now
+
+Index 6
+Pos -1 0 INDEX 5 # Adjust '5' if needed
+Index 21 # Check what this index represents
+# Pos 0 -1 INDEX 5 # Original rule - likely incorrect now
+Index 22 # This is now a 4x1 block
+# Pos -1 -1 INDEX 5 # Original rule - likely incorrect now
+
+# ... (Review and adjust the rest of the 'Fill tiles' section based on the new index definitions) ... [cite: 11]
