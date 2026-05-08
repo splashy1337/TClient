@@ -1466,6 +1466,10 @@ set(EXPECTED_DATA
   deadtee.png
   debug_font.png
   editor/audio_source.png
+  editor/automap/!to.rules
+  editor/automap/MB_generic.rules
+  editor/automap/MB_grass.rules
+  editor/automap/amazing_freeze.rules
   editor/automap/basic_freeze.rules
   editor/automap/ddmax_freeze.rules
   editor/automap/ddnet_grass.rules
@@ -1474,13 +1478,16 @@ set(EXPECTED_DATA
   editor/automap/desert_main.rules
   editor/automap/fadeout.rules
   editor/automap/generic_clear.rules
+  editor/automap/generic_unhook_edit.rules
   editor/automap/generic_unhookable.rules
   editor/automap/generic_unhookable_0.7.rules
+  editor/automap/grass_grey_0.7.rules
   editor/automap/grass_main.rules
   editor/automap/jungle_main.rules
   editor/automap/jungle_midground.rules
   editor/automap/round_tiles.rules
   editor/automap/water.rules
+  editor/automap/wildest_unhookable_sharp.rules
   editor/automap/winter_main.rules
   editor/checker.png
   editor/cursor.png
@@ -1614,9 +1621,9 @@ set(EXPECTED_DATA
   mapres/winter_mountains.png
   mapres/winter_mountains2.png
   mapres/winter_mountains3.png
-  maps/Gold\ Mine.map
+  maps/Gold Mine.map
   maps/LearnToPlay.map
-  maps/Sunny\ Side\ Up.map
+  maps/Sunny Side Up.map
   maps/Tsunami.map
   maps/Tutorial.map
   maps/coverage.map
@@ -1634,9 +1641,9 @@ set(EXPECTED_DATA
   maps/dm8.map
   maps/dm9.map
   maps/license.txt
-  maps7/Gold\ Mine.map
+  maps7/Gold Mine.map
   maps7/LearnToPlay.map
-  maps7/Sunny\ Side\ Up.map
+  maps7/Sunny Side Up.map
   maps7/Tsunami.map
   maps7/Tutorial.map
   maps7/readme.txt
@@ -1908,6 +1915,7 @@ set(EXPECTED_DATA
   skins7/x_ninja.json
   skins7/xmas_hat.png
   strong_weak.png
+  super_switch.txt
   tclient/builtinscripts/sayemoticon.chai
   tclient/fonts/Cabin-Regular.ttf
   tclient/fonts/FreeSansBold.ttf
