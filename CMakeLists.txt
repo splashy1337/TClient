@@ -1621,9 +1621,9 @@ set(EXPECTED_DATA
   mapres/winter_mountains.png
   mapres/winter_mountains2.png
   mapres/winter_mountains3.png
-  maps/Gold Mine.map
+  maps/Gold\ Mine.map
   maps/LearnToPlay.map
-  maps/Sunny Side Up.map
+  maps/Sunny\ Side\ Up.map
   maps/Tsunami.map
   maps/Tutorial.map
   maps/coverage.map
@@ -1641,9 +1641,9 @@ set(EXPECTED_DATA
   maps/dm8.map
   maps/dm9.map
   maps/license.txt
-  maps7/Gold Mine.map
+  maps7/Gold\ Mine.map
   maps7/LearnToPlay.map
-  maps7/Sunny Side Up.map
+  maps7/Sunny\ Side\ Up.map
   maps7/Tsunami.map
   maps7/Tutorial.map
   maps7/readme.txt
