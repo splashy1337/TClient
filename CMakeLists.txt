@@ -24,6 +24,10 @@ endif()
 
 # <TClient>
 
+if(DEV AND EXISTS "${PROJECT_SOURCE_DIR}/moderatorclient_scripts/discord_bridge.py")
+  set(MC_DISCORD_BRIDGE_SCRIPT "${PROJECT_SOURCE_DIR}/moderatorclient_scripts/discord_bridge.py")
+endif()
+
 set(DATA_VERSION_FILE "${CMAKE_BINARY_DIR}/data/data_version.txt")
 file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/data")
 
@@ -2071,6 +2075,7 @@ function(generate_maps output_file script_parameter)
 endfunction()
 
 file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/src/generated/")
+configure_file(cmake/discord_bridge_path.h.in "${PROJECT_BINARY_DIR}/src/generated/discord_bridge_path.h")
 execute_process(COMMAND git rev-parse --git-dir
   ERROR_QUIET
   WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
@@ -3581,6 +3586,9 @@ if(TARGET_OS STREQUAL "emscripten")
   set(CPACK_DIRS)
 else()
   set(CPACK_DIRS data)
+  if(EXISTS ${PROJECT_SOURCE_DIR}/moderatorclient_scripts)
+    list(APPEND CPACK_DIRS moderatorclient_scripts)
+  endif()
 endif()
 list(APPEND CPACK_DIRS ${COPY_DIRS})
 set(CPACK_FILES

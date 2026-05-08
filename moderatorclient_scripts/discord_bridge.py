@@ -22,14 +22,15 @@ Setup
 2. Put your Discord user token in ONE of these places:
 
    - Environment variable:  MODERATORCLIENT_DISCORD_TOKEN=<token>
-   - File (preferred):      %APPDATA%/Moderator Client/discord_token.txt
+   - File (preferred):      %APPDATA%/DDNet/discord_token.txt
 
 3. Run the bridge:
 
-       python discord_bridge.py
+       python discord_bridge.py --channel-id <your_forum_channel_id>
 
    Keep the terminal open. The script polls every 60 seconds and writes
-   %APPDATA%/Moderator Client/todo_players.json atomically on every successful poll.
+   %APPDATA%/DDNet/todo_players.json atomically on every successful poll.
+   A log is written to %APPDATA%/DDNet/discord_bridge.log.
 """
 
 import argparse
@@ -38,16 +39,17 @@ import json
 import os
 import sys
 import tempfile
+import traceback
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import discord
 
-DEFAULT_FORUM_CHANNEL_ID = 1020457397812203540
 TODO_TAG_NAME = "To-Do"
 DONE_TAG_NAME = "Done"
 CHECKMARK = "✅"
 POLL_INTERVAL_SECONDS = 60
+RECONNECT_DELAY_SECONDS = 30
 
 
 def config_dir() -> Path:
@@ -56,6 +58,40 @@ def config_dir() -> Path:
     if appdata:
         return Path(appdata) / "DDNet"
     return Path.home() / ".config" / "DDNet"
+
+
+# --- logging ------------------------------------------------------------------
+
+_log_file = None
+
+
+def _log(msg: str, *, error: bool = False) -> None:
+    ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+    line = f"[{ts}] {msg}"
+    stream = sys.stderr if error else sys.stdout
+    try:
+        print(line, file=stream, flush=True)
+    except Exception:
+        pass
+    if _log_file is not None:
+        try:
+            print(line, file=_log_file, flush=True)
+        except Exception:
+            pass
+
+
+def setup_logging() -> None:
+    global _log_file
+    log_path = config_dir() / "discord_bridge.log"
+    config_dir().mkdir(parents=True, exist_ok=True)
+    try:
+        _log_file = open(log_path, "a", encoding="utf-8", buffering=1)
+        _log(f"--- bridge starting (pid={os.getpid()}) ---")
+    except Exception as e:
+        print(f"[bridge] could not open log file {log_path}: {e}", file=sys.stderr)
+
+
+# ------------------------------------------------------------------------------
 
 
 def load_token() -> str:
@@ -127,7 +163,7 @@ async def collect_todos(client: discord.Client, channel_id: int) -> list:
                 break
             threads.append(t)
     except Exception as e:
-        print(f"[bridge] could not fetch archived threads: {e}", file=sys.stderr)
+        _log(f"could not fetch archived threads: {e}", error=True)
 
     # Deduplicate (active thread list and archived list can overlap).
     seen: set = set()
@@ -146,7 +182,6 @@ async def collect_todos(client: discord.Client, channel_id: int) -> list:
                 continue
 
             has_check = has_checkmark(starter)
-            is_todo_tag = TODO_TAG_NAME in tag_names
             has_done_tag = DONE_TAG_NAME in tag_names
 
             # Exclude if resolved: Done tag or checkmark (or both).
@@ -154,7 +189,6 @@ async def collect_todos(client: discord.Client, channel_id: int) -> list:
                 continue
 
             # Collect attachments from the first 10 messages (starter + early replies).
-            # Keeping the limit small avoids rate-limiting with many open threads.
             seen_urls: set = set()
             attachments = []
             async for msg in thread.history(limit=10, oldest_first=True):
@@ -187,19 +221,12 @@ async def collect_todos(client: discord.Client, channel_id: int) -> list:
                 "attachments": attachments,
             })
         except Exception as e:
-            print(f"[bridge] error on thread {getattr(thread, 'id', '?')}: {e}",
-                  file=sys.stderr)
+            _log(f"error on thread {getattr(thread, 'id', '?')}: {e}", error=True)
     return results
 
 
 async def process_done_commands(client: discord.Client) -> None:
-    """Process mark_done command files written by the C++ client.
-
-    The client writes todo_done_<post_id>.json files.  For each one we:
-      1. React with ✅ on the starter message of that thread.
-      2. Reply "Done" to the thread.
-      3. Delete the command file so it isn't processed twice.
-    """
+    """Process mark_done command files written by the C++ client."""
     cfg = config_dir()
     for cmd_file in cfg.glob("todo_done_*.json"):
         try:
@@ -218,17 +245,17 @@ async def process_done_commands(client: discord.Client) -> None:
                 try:
                     await starter.add_reaction(CHECKMARK)
                 except Exception as e:
-                    print(f"[bridge] could not react on {thread_id}: {e}", file=sys.stderr)
+                    _log(f"could not react on {thread_id}: {e}", error=True)
                 try:
                     await starter.reply("Done")
                 except Exception as e:
-                    print(f"[bridge] could not reply to starter on {thread_id}: {e}", file=sys.stderr)
+                    _log(f"could not reply to starter on {thread_id}: {e}", error=True)
             else:
-                print(f"[bridge] could not find starter message for {thread_id}", file=sys.stderr)
+                _log(f"could not find starter message for {thread_id}", error=True)
 
-            print(f"[bridge] marked done: thread {thread_id}")
+            _log(f"marked done: thread {thread_id}")
         except Exception as e:
-            print(f"[bridge] error processing {cmd_file.name}: {e}", file=sys.stderr)
+            _log(f"error processing {cmd_file.name}: {e}", error=True)
         finally:
             try:
                 cmd_file.unlink()
@@ -236,46 +263,60 @@ async def process_done_commands(client: discord.Client) -> None:
                 pass
 
 
-async def main_async(channel_id: int):
-    token = load_token()
-    out_path = config_dir() / "todo_players.json"
+async def _run_session(token: str, channel_id: int, out_path: Path) -> bool:
+    """Run one Discord session. Returns True if the exit was fatal (don't retry)."""
     client = discord.Client()
-
     ready = asyncio.Event()
 
     @client.event
     async def on_ready():
-        print(f"[bridge] logged in as {client.user}")
+        _log(f"logged in as {client.user}")
         ready.set()
 
-    async def command_loop():
-        """Fast loop: checks for mark_done commands every 5 s, independent of the main poll."""
-        await ready.wait()
-        while not client.is_closed():
-            try:
-                await process_done_commands(client)
-            except Exception as e:
-                print(f"[bridge] done-command error: {e}", file=sys.stderr)
-            await asyncio.sleep(5)
+    @client.event
+    async def on_disconnect():
+        _log("disconnected from Discord", error=True)
 
-    async def poll_loop():
-        await ready.wait()
-        while not client.is_closed():
+    # Use default-argument capture so each session's tasks reference the right client/ready.
+    async def _poll(c=client, r=ready):
+        await r.wait()
+        while not c.is_closed():
             try:
-                todos = await collect_todos(client, channel_id)
+                todos = await collect_todos(c, channel_id)
                 atomic_write_json(out_path, {
                     "updated_at": datetime.now(timezone.utc).isoformat(),
                     "todos": todos,
                 })
-                print(f"[bridge] wrote {len(todos)} todos to {out_path}")
+                _log(f"wrote {len(todos)} todos to {out_path}")
             except Exception as e:
-                print(f"[bridge] poll error: {e}", file=sys.stderr)
+                _log(f"poll error: {e}", error=True)
             await asyncio.sleep(POLL_INTERVAL_SECONDS)
 
-    poll_task = asyncio.create_task(poll_loop())
-    command_task = asyncio.create_task(command_loop())
+    async def _cmds(c=client, r=ready):
+        await r.wait()
+        while not c.is_closed():
+            try:
+                await process_done_commands(c)
+            except Exception as e:
+                _log(f"done-command error: {e}", error=True)
+            await asyncio.sleep(5)
+
+    poll_task = asyncio.create_task(_poll())
+    command_task = asyncio.create_task(_cmds())
+    fatal = False
     try:
         await client.start(token)
+    except discord.LoginFailure as e:
+        _log(f"login failed (bad token?): {e}", error=True)
+        fatal = True
+    except asyncio.CancelledError:
+        fatal = True  # KeyboardInterrupt path — don't reconnect
+        raise
+    except Exception as e:
+        _log(f"session ended unexpectedly: {e}", error=True)
+        traceback.print_exc(file=sys.stderr)
+        if _log_file is not None:
+            traceback.print_exc(file=_log_file)
     finally:
         for task in (poll_task, command_task):
             task.cancel()
@@ -283,17 +324,36 @@ async def main_async(channel_id: int):
                 await task
             except asyncio.CancelledError:
                 pass
+        if not client.is_closed():
+            try:
+                await client.close()
+            except Exception:
+                pass
+    return fatal
+
+
+async def main_async(channel_id: int):
+    token = load_token()
+    out_path = config_dir() / "todo_players.json"
+
+    while True:
+        fatal = await _run_session(token, channel_id, out_path)
+        if fatal:
+            break
+        _log(f"reconnecting in {RECONNECT_DELAY_SECONDS}s...")
+        await asyncio.sleep(RECONNECT_DELAY_SECONDS)
 
 
 def main():
+    setup_logging()
     parser = argparse.ArgumentParser(description="Moderator Client Discord bridge")
-    parser.add_argument("--channel-id", type=int, default=DEFAULT_FORUM_CHANNEL_ID,
+    parser.add_argument("--channel-id", type=int, required=True,
                         help="Discord forum channel ID to poll for moderator reports")
     args = parser.parse_args()
     try:
         asyncio.run(main_async(args.channel_id))
     except KeyboardInterrupt:
-        pass
+        _log("stopped by user")
 
 
 if __name__ == "__main__":

@@ -2087,8 +2087,8 @@ void CMenus::RenderSettingsModeration(CUIRect MainView)
 	RightView.HSplitTop(HeadlineHeight, &Label, &RightView);
 	Ui()->DoLabel(&Label, TCLocalize("Overlay Keybind"), HeadlineFontSize, TEXTALIGN_ML);
 	RightView.HSplitTop(MarginSmall, nullptr, &RightView);
-	RightView.HSplitTop(LineSize * 3.5f, &Label, &RightView);
-	Ui()->DoLabel(&Label, TCLocalize("Bind any key to mc_toggle_moderator_panel via Settings → Controls, or run:\n  bind f9 mc_toggle_moderator_panel\nin the console."), LineSize * 0.8f, TEXTALIGN_ML);
+	RightView.HSplitTop(LineSize * 2.0f, &Label, &RightView);
+	Ui()->DoLabel(&Label, TCLocalize("Bind a key to mc_toggle_moderator_panel in Settings → Controls.\nOr run in console: bind f9 mc_toggle_moderator_panel"), LineSize * 0.8f, TEXTALIGN_ML);
 
 	RightView.HSplitTop(HeadlineHeight, &Label, &RightView);
 	Ui()->DoLabel(&Label, TCLocalize("Discord Bridge"), HeadlineFontSize, TEXTALIGN_ML);
@@ -2100,28 +2100,44 @@ void CMenus::RenderSettingsModeration(CUIRect MainView)
 	RightView.HSplitTop(MarginSmall, nullptr, &RightView);
 
 	RightView.HSplitTop(LineSize, &Label, &RightView);
-	Ui()->DoLabel(&Label, TCLocalize("Path to discord_bridge.py"), LineSize * 0.8f, TEXTALIGN_ML);
+	Ui()->DoLabel(&Label, TCLocalize("Discord user token"), LineSize * 0.8f, TEXTALIGN_ML);
 	RightView.HSplitTop(LineSize * 1.5f, &Button, &RightView);
-	static CLineInput s_BridgeScript(g_Config.m_McDiscordBridgeScript, sizeof(g_Config.m_McDiscordBridgeScript));
-	s_BridgeScript.SetEmptyText(TCLocalize("C:/path/to/moderatorclient_scripts/discord_bridge.py"));
-	Ui()->DoEditBox(&s_BridgeScript, &Button, EditBoxFontSize);
+	static CLineInput s_TokenInput(g_Config.m_McDiscordToken, sizeof(g_Config.m_McDiscordToken));
+	s_TokenInput.SetEmptyText(TCLocalize("paste your Discord user token here"));
+	s_TokenInput.SetHidden(true);
+	Ui()->DoEditBox(&s_TokenInput, &Button, EditBoxFontSize);
 	RightView.HSplitTop(MarginSmall, nullptr, &RightView);
 
 	RightView.HSplitTop(LineSize, &Label, &RightView);
 	Ui()->DoLabel(&Label, TCLocalize("Discord forum channel ID"), LineSize * 0.8f, TEXTALIGN_ML);
 	RightView.HSplitTop(LineSize * 1.5f, &Button, &RightView);
 	static CLineInput s_ChannelId(g_Config.m_McDiscordChannelId, sizeof(g_Config.m_McDiscordChannelId));
-	s_ChannelId.SetEmptyText(TCLocalize("leave empty to use default"));
+	s_ChannelId.SetEmptyText(TCLocalize("required — paste your forum channel ID"));
 	Ui()->DoEditBox(&s_ChannelId, &Button, EditBoxFontSize);
 	RightView.HSplitTop(MarginSmall, nullptr, &RightView);
 
-	RightView.HSplitTop(LineSize * 2.0f, &Button, &RightView);
-	CUIRect BridgeButtonLeft, BridgeStatus;
-	Button.VSplitMid(&BridgeButtonLeft, &BridgeStatus, MarginSmall);
-	static CButtonContainer s_StartBridgeButton;
-	if(DoButtonLineSize_Menu(&s_StartBridgeButton, TCLocalize("Start bridge now"), 0, &BridgeButtonLeft, LineSize, false, 0, IGraphics::CORNER_ALL, 5.0f, 0.0f, ColorRGBA(0.0f, 0.0f, 0.0f, 0.25f)))
-		GameClient()->m_ModeratorPanel.StartDiscordBridge();
-	Ui()->DoLabel(&BridgeStatus,
+	RightView.HSplitTop(LineSize * 1.5f, &Button, &RightView);
+	{
+		CUIRect StartBtn, RestartBtn, KillBtn, Rem;
+		const float BtnW = (Button.w - MarginSmall * 2.0f) / 3.0f;
+		Button.VSplitLeft(BtnW, &StartBtn, &Rem);
+		Rem.VSplitLeft(MarginSmall, nullptr, &Rem);
+		Rem.VSplitLeft(BtnW, &RestartBtn, &Rem);
+		Rem.VSplitLeft(MarginSmall, nullptr, &Rem);
+		KillBtn = Rem;
+		static CButtonContainer s_StartBridgeButton;
+		static CButtonContainer s_RestartBridgeButton;
+		static CButtonContainer s_KillBridgeButton;
+		if(DoButtonLineSize_Menu(&s_StartBridgeButton, TCLocalize("Start bridge"), 0, &StartBtn, LineSize, false, 0, IGraphics::CORNER_ALL, 5.0f, 0.0f, ColorRGBA(0.0f, 0.0f, 0.0f, 0.25f)))
+			GameClient()->m_ModeratorPanel.StartDiscordBridge();
+		if(DoButtonLineSize_Menu(&s_RestartBridgeButton, TCLocalize("Restart bridge"), 0, &RestartBtn, LineSize, false, 0, IGraphics::CORNER_ALL, 5.0f, 0.0f, ColorRGBA(0.0f, 0.0f, 0.0f, 0.25f)))
+			GameClient()->m_ModeratorPanel.RestartDiscordBridge();
+		if(DoButtonLineSize_Menu(&s_KillBridgeButton, TCLocalize("Kill bridge"), 0, &KillBtn, LineSize, false, 0, IGraphics::CORNER_ALL, 5.0f, 0.0f, ColorRGBA(0.2f, 0.05f, 0.05f, 0.35f)))
+			GameClient()->m_ModeratorPanel.KillDiscordBridge();
+	}
+	RightView.HSplitTop(MarginSmall, nullptr, &RightView);
+	RightView.HSplitTop(LineSize, &Label, &RightView);
+	Ui()->DoLabel(&Label,
 		GameClient()->m_ModeratorPanel.IsBridgeRunning() ? TCLocalize("bridge: RUNNING") : TCLocalize("bridge: not running"),
 		LineSize * 0.8f, TEXTALIGN_ML);
 

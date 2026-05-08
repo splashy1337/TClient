@@ -20,6 +20,8 @@
 
 #include <base/os.h>
 
+#include <generated/discord_bridge_path.h>
+
 static constexpr int JSON_POLL_INTERVAL_SECONDS = 5;
 
 void CModeratorPanel::ConTogglePanel(IConsole::IResult *pResult, void *pUserData)
@@ -85,27 +87,40 @@ void CModeratorPanel::StartDiscordBridge()
 	str_copy(aScriptPath, g_Config.m_McDiscordBridgeScript);
 
 	// Self-heal: if the configured path is empty or no longer exists (e.g. game was moved),
-	// search for moderatorclient_scripts/discord_bridge.py relative to the executable.
+	// search for discord_bridge.py using the compile-time source path first, then relative candidates.
 	if(aScriptPath[0] == '\0' || !fs_is_file(aScriptPath))
 	{
-		const char *apCandidates[] = {
-			"../../moderatorclient_scripts/discord_bridge.py", // tclient/build/release/DDNet.exe -> tclient/moderatorclient_scripts
-			"../moderatorclient_scripts/discord_bridge.py",
-			"moderatorclient_scripts/discord_bridge.py",
-		};
 		bool Found = false;
-		for(const char *pRel : apCandidates)
+#if defined(MC_DISCORD_BRIDGE_SCRIPT)
+		if(fs_is_file(MC_DISCORD_BRIDGE_SCRIPT))
 		{
-			char aAbs[IO_MAX_PATH_LENGTH];
-			Storage()->GetBinaryPathAbsolute(pRel, aAbs, sizeof(aAbs));
-			if(fs_is_file(aAbs))
+			str_copy(aScriptPath, MC_DISCORD_BRIDGE_SCRIPT);
+			str_copy(g_Config.m_McDiscordBridgeScript, MC_DISCORD_BRIDGE_SCRIPT, sizeof(g_Config.m_McDiscordBridgeScript));
+			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "mc_mod",
+				"discord bridge: using built-in script path");
+			Found = true;
+		}
+#endif
+		if(!Found)
+		{
+			const char *apCandidates[] = {
+				"../../moderatorclient_scripts/discord_bridge.py", // tclient/build/release/DDNet.exe -> tclient/moderatorclient_scripts
+				"../moderatorclient_scripts/discord_bridge.py",
+				"moderatorclient_scripts/discord_bridge.py",
+			};
+			for(const char *pRel : apCandidates)
 			{
-				str_copy(aScriptPath, aAbs);
-				str_copy(g_Config.m_McDiscordBridgeScript, aAbs, sizeof(g_Config.m_McDiscordBridgeScript));
-				Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "mc_mod",
-					"discord bridge: auto-detected script path");
-				Found = true;
-				break;
+				char aAbs[IO_MAX_PATH_LENGTH];
+				Storage()->GetBinaryPathAbsolute(pRel, aAbs, sizeof(aAbs));
+				if(fs_is_file(aAbs))
+				{
+					str_copy(aScriptPath, aAbs);
+					str_copy(g_Config.m_McDiscordBridgeScript, aAbs, sizeof(g_Config.m_McDiscordBridgeScript));
+					Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "mc_mod",
+						"discord bridge: auto-detected script path");
+					Found = true;
+					break;
+				}
 			}
 		}
 		if(!Found)
@@ -124,18 +139,61 @@ void CModeratorPanel::StartDiscordBridge()
 			"discord bridge: already running");
 		return;
 	}
+	if(g_Config.m_McDiscordToken[0] != '\0')
+	{
+		char aTokenPath[IO_MAX_PATH_LENGTH];
+		Storage()->GetCompletePath(IStorage::TYPE_SAVE, "discord_token.txt", aTokenPath, sizeof(aTokenPath));
+		IOHANDLE f = io_open(aTokenPath, IOFLAG_WRITE);
+		if(f)
+		{
+			io_write(f, g_Config.m_McDiscordToken, (unsigned)str_length(g_Config.m_McDiscordToken));
+			io_close(f);
+		}
+	}
+
+	if(g_Config.m_McDiscordChannelId[0] == '\0')
+	{
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "mc_mod",
+			"discord bridge: channel ID is required — set it in Settings → Moderation");
+		return;
+	}
 	const char *pArgs[3] = {aScriptPath, "--channel-id", g_Config.m_McDiscordChannelId};
-	int NumArgs = g_Config.m_McDiscordChannelId[0] != '\0' ? 3 : 1;
+	int NumArgs = 3;
+	// Try pythonw.exe first (no console window), fall back to python.exe (shows a window,
+	// but at least errors from missing packages/token are visible).
 	m_BridgeProcess = process_execute("pythonw.exe", EShellExecuteWindowState::BACKGROUND, pArgs, NumArgs);
+	if(m_BridgeProcess == INVALID_PROCESS)
+		m_BridgeProcess = process_execute("python.exe", EShellExecuteWindowState::BACKGROUND, pArgs, NumArgs);
 	if(m_BridgeProcess == INVALID_PROCESS)
 	{
 		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "mc_mod",
-			"discord bridge: failed to spawn pythonw.exe (not installed or not on PATH?)");
+			"discord bridge: failed to spawn Python (pythonw.exe / python.exe not found on PATH)");
 	}
 	else
 	{
 		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "mc_mod", "discord bridge: started");
 	}
+}
+
+void CModeratorPanel::KillDiscordBridge()
+{
+	if(m_BridgeProcess != INVALID_PROCESS)
+	{
+		if(process_is_alive(m_BridgeProcess))
+			process_kill(m_BridgeProcess);
+		m_BridgeProcess = INVALID_PROCESS;
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "mc_mod", "discord bridge: killed");
+	}
+	else
+	{
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "mc_mod", "discord bridge: not running");
+	}
+}
+
+void CModeratorPanel::RestartDiscordBridge()
+{
+	KillDiscordBridge();
+	StartDiscordBridge();
 }
 
 bool CModeratorPanel::IsActive() const { return g_Config.m_McModeratorPanelOpen != 0; }

@@ -120,6 +120,8 @@ public:
 	bool OnInput(const IInput::CEvent &Event) override;
 
 	void StartDiscordBridge();
+	void KillDiscordBridge();
+	void RestartDiscordBridge();
 	bool IsBridgeRunning() const;
 
 	void OnRconLine(const char *pLine);

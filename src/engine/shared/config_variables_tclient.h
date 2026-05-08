@@ -291,7 +291,8 @@ MACRO_CONFIG_STR(McAttachmentDir, mc_attachment_dir, 512, "", CFGFLAG_CLIENT | C
 MACRO_CONFIG_INT(McModeratorPanelOpen, mc_moderator_panel_open, 0, 0, 1, CFGFLAG_CLIENT, "Whether the moderator overlay panel is open (toggled by keybind)")
 MACRO_CONFIG_INT(McAutoStartDiscordBridge, mc_auto_start_discord_bridge, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Auto-start the Discord bridge (pythonw.exe) when Moderator Client launches")
 MACRO_CONFIG_STR(McDiscordBridgeScript, mc_discord_bridge_script, 512, "", CFGFLAG_CLIENT | CFGFLAG_SAVE, "Absolute path to discord_bridge.py (the Discord sidecar script)")
-MACRO_CONFIG_STR(McDiscordChannelId, mc_discord_channel_id, 32, "", CFGFLAG_CLIENT | CFGFLAG_SAVE, "Discord forum channel ID to poll for moderator reports (leave empty for default)")
+MACRO_CONFIG_STR(McDiscordToken, mc_discord_token, 512, "", CFGFLAG_CLIENT | CFGFLAG_SAVE, "Discord user token for the bridge (written to discord_token.txt on bridge start)")
+MACRO_CONFIG_STR(McDiscordChannelId, mc_discord_channel_id, 32, "", CFGFLAG_CLIENT | CFGFLAG_SAVE, "Discord forum channel ID to poll for moderator reports (required)")
 
 // Moderator Client Chat Watcher
 MACRO_CONFIG_INT(McChatWatcher, mc_chat_watcher, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Scan incoming chat on KoG servers for flagged words and log hits to the moderator panel")
